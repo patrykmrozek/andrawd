@@ -10,8 +10,10 @@ import androidx.activity.enableEdgeToEdge
                      /* foundation */
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.offset
@@ -24,6 +26,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.unit.IntOffset
                      /* runtime */
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -41,18 +45,13 @@ class MainActivity : ComponentActivity()
         enableEdgeToEdge()
         setContent {
             andrawd_theme {
-                ui();
+                toolbar();
             }
         }
     }
 }
 
-data class Vec2(
-    val x: Float,
-    val y: Float,
-);
-
-enum class state {
+enum class ui_state_e {
     CURSOR,
     DRAW,
     SHAPE,
@@ -60,60 +59,68 @@ enum class state {
     TEXT,
 }
 
-var curr_state by mutableStateOf(state.CURSOR);
+@Composable
+fun toolbar_button(label: String,
+                   state: ui_state_e,
+                   handle_state_change: (ui_state_e) -> Unit) {
+
+    var show_panel by remember { mutableStateOf(false) };
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(contentAlignment = Alignment.BottomCenter) {
+            Button(onClick = { show_panel = !show_panel; handle_state_change(state) }) {
+                Text(label);
+            }
+            if (show_panel) {
+                Popup(alignment = Alignment.Center,
+                      offset = IntOffset(0, -150),
+                      onDismissRequest = { show_panel = false }) {
+                    panel(state);
+                }
+            }
+        }
+    }
+}
 @Preview
 @Composable
-fun ui()
+fun toolbar()
 {
-    var can_display_panel by remember {mutableStateOf(false)};
+    var curr_ui_state     by remember { mutableStateOf(ui_state_e.CURSOR) };
 
     Box(modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter) {
-        Box(modifier = Modifier.fillMaxWidth(fraction = 0.85F)
+        Box(modifier = Modifier.fillMaxWidth(0.85F)
                                .offset(0.dp, -15.dp),
             contentAlignment = Alignment.BottomCenter) {
             Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween) {
-                Button(modifier = Modifier.weight(1F),
-                       onClick = { curr_state = state.CURSOR; can_display_panel = false; }) {
-                    Text("CURSOR");
-                }
-                Button(modifier = Modifier.weight(1F),
-                       onClick = { curr_state = state.DRAW; can_display_panel = true; }) {
-                    Text("TOOLS");
-                }
-                Button(modifier = Modifier.weight(1F),
-                       onClick = { curr_state = state.SHAPE; can_display_panel = true; }) {
-                    Text("SHAPES");
-                }
-                Button(modifier = Modifier.weight(1F),
-                       onClick = { curr_state = state.LINE; can_display_panel = true; }) {
-                    Text("LINES");
-                }
-                Button(modifier = Modifier.weight(1F),
-                       onClick = { curr_state = state.TEXT; can_display_panel = true; }) {
-                    Text("TEXT");
-                }
-            }
-            if (can_display_panel) {
-                panel();
+                toolbar_button("CURSOR", ui_state_e.CURSOR)
+                    {curr_ui_state = ui_state_e.CURSOR };
+                toolbar_button("DRAW",   ui_state_e.DRAW)
+                    {curr_ui_state = ui_state_e.DRAW };
+                toolbar_button("SHAPE",  ui_state_e.SHAPE)
+                    {curr_ui_state = ui_state_e.SHAPE };
+                toolbar_button("LINE",   ui_state_e.LINE)
+                    {curr_ui_state = ui_state_e.LINE };
+                toolbar_button("TEXT",   ui_state_e.TEXT)
+                    {curr_ui_state = ui_state_e.TEXT };
             }
         }
     }
 }
 
 @Composable
-fun panel() {
-    Box(modifier = Modifier.fillMaxWidth()
+fun panel(state: ui_state_e) {
+    Box(modifier = Modifier.fillMaxHeight(0.8F)
                            .offset(0.dp, -50.dp)
                            .background(Color.Red),
         contentAlignment = Alignment.Center) {
-        Row(modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly) {
-            when (curr_state) {
-                state.CURSOR -> {}
-
-                state.DRAW -> {
+        Column(modifier = Modifier.fillMaxHeight(),
+               verticalArrangement = Arrangement.SpaceBetween,
+               horizontalAlignment = Alignment.CenterHorizontally) {
+            when (state) {
+                ui_state_e.CURSOR -> {}
+                ui_state_e.DRAW -> {
                     Button(onClick = {}) {
                         Text("PENCIL");
                     }
@@ -128,7 +135,7 @@ fun panel() {
                     }
                 }
 
-                state.SHAPE -> {
+                ui_state_e.SHAPE -> {
                     Button(onClick = {}) {
                         Text("SQUARE");
                     }
@@ -143,7 +150,7 @@ fun panel() {
                     }
                 }
 
-                state.LINE -> {
+                ui_state_e.LINE -> {
                     Button(onClick = {}) {
                         Text("LINE");
                     }
@@ -158,7 +165,7 @@ fun panel() {
                     }
                 }
 
-                state.TEXT -> {
+                ui_state_e.TEXT -> {
                     Button(onClick = {}) {
                         Text("TEXTBOX");
                     }
@@ -175,6 +182,13 @@ fun panel() {
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun panel_pv()
+{
+    panel(ui_state_e.DRAW);
 }
 
 /*
