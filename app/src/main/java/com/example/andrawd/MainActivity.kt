@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity()
         enableEdgeToEdge()
         setContent {
             andrawd_theme {
-                toolbar();
+                andrawd();
             }
         }
     }
@@ -117,12 +117,29 @@ fun states_of_k(k: ui_kind_e): List<ui_state_e> = when (k) {
     ui_kind_e.COLOR  -> color_state_e.entries
 }
 
+class Andrawd()
+{
+    var state by mutableStateOf<ui_state_e>(cursor_state);
+
+    fun set_state(new_state: ui_state_e)
+    {
+        state = new_state;
+    }
+}
+
+@Composable
+fun andrawd()
+{
+    val app = remember { Andrawd() };
+    toolbar(app.state, app::set_state);
+}
+
 @Composable
 fun toolbar_button(k:                ui_kind_e,
                    curr_state:       ui_state_e,
                    selected:         Boolean,
                    show_panel:       Boolean,
-                   on_click: () -> Unit,
+                   on_click:         () -> Unit,
                    on_panel_click:   (ui_state_e) -> Unit,
                    on_panel_dismiss: () -> Unit)
 {
@@ -147,10 +164,9 @@ fun toolbar_button(k:                ui_kind_e,
 
 /* too much state in toolbar, need some higher level andrawd_run() function or somethign */
 @Composable
-fun toolbar()
+fun toolbar(curr_state: ui_state_e, set_state: (ui_state_e) -> Unit)
 {
-    var curr_state  by remember { mutableStateOf<ui_state_e>(cursor_state) } ;
-    var open_kind by remember { mutableStateOf<ui_kind_e?>(null) } ;
+    var open_kind  by remember { mutableStateOf<ui_kind_e?>(null) } ;
 
     Box(modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter) {
@@ -161,15 +177,17 @@ fun toolbar()
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                 for (k in ui_kind_e.entries) {
                     toolbar_button(k = k,
-                                   selected = curr_state.kind == k,
+                                   selected   = curr_state.kind == k,
                                    show_panel = open_kind == k,
                                    curr_state = curr_state,
-                                   on_click = {
+                                   on_click   = {
                                        val has_panel = states_of_k(k).size > 1;
-                                       if (curr_state.kind != k) curr_state = states_of_k(k).first();
+                                       if (curr_state.kind != k) {
+                                           set_state(states_of_k(k).first());
+                                       }
                                        open_kind = if (has_panel && open_kind != k) k else null;
                                    },
-                                   on_panel_click   = {curr_state = it; open_kind = null},
+                                   on_panel_click   = {set_state(it); open_kind = null},
                                    on_panel_dismiss = {open_kind = null});
                 }
             }
@@ -181,8 +199,8 @@ fun toolbar()
 fun panel_button(state: ui_state_e, selected: Boolean, on_click: (ui_state_e) -> Unit)
 {
     Button(onClick = { on_click(state) },
-           colors = if (selected) ButtonDefaults.buttonColors()
-                    else ButtonDefaults.filledTonalButtonColors()) {
+           colors  = if (selected) ButtonDefaults.buttonColors()
+                     else ButtonDefaults.filledTonalButtonColors()) {
         /* TODO: change tthese to icons also */
        Text(state.toString());
     }
