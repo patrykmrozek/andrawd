@@ -57,19 +57,43 @@ enum class ui_state_e {
     SHAPE,
     LINE,
     TEXT,
+    COLOR,
+}
+
+enum class draw_state_e {
+    PENCIL,
+    ERASER,
+    MARKER,
+}
+
+enum class shape_state_e {
+    SQUARE,
+    CIRCLE,
+    TRIANGLE,
+}
+
+enum class line_state_e {
+    LINE,
+    JOIN,
+    BEZIER,
+}
+
+enum class text_state_e {
+    TEXTBOX,
+    HEADER,
+    PARAGRAPH,
 }
 
 @Composable
-fun toolbar_button(label: String,
-                   state: ui_state_e,
-                   handle_state_change: (ui_state_e) -> Unit) {
+fun toolbar_button(state: ui_state_e,
+                   handle_state: (ui_state_e) -> Unit) {
 
     var show_panel by remember { mutableStateOf(false) };
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Box(contentAlignment = Alignment.BottomCenter) {
-            Button(onClick = { show_panel = !show_panel; handle_state_change(state) }) {
-                Text(label);
+            Button(onClick = { show_panel = !show_panel; handle_state(state) }) {
+                Text(state.toString());
             }
             if (show_panel) {
                 Popup(alignment = Alignment.Center,
@@ -85,7 +109,7 @@ fun toolbar_button(label: String,
 @Composable
 fun toolbar()
 {
-    var curr_ui_state     by remember { mutableStateOf(ui_state_e.CURSOR) };
+    var curr_ui_state by remember { mutableStateOf(ui_state_e.CURSOR) };
 
     Box(modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter) {
@@ -93,92 +117,54 @@ fun toolbar()
                                .offset(0.dp, -15.dp),
             contentAlignment = Alignment.BottomCenter) {
             Row(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween) {
-                toolbar_button("CURSOR", ui_state_e.CURSOR)
-                    {curr_ui_state = ui_state_e.CURSOR };
-                toolbar_button("DRAW",   ui_state_e.DRAW)
-                    {curr_ui_state = ui_state_e.DRAW };
-                toolbar_button("SHAPE",  ui_state_e.SHAPE)
-                    {curr_ui_state = ui_state_e.SHAPE };
-                toolbar_button("LINE",   ui_state_e.LINE)
-                    {curr_ui_state = ui_state_e.LINE };
-                toolbar_button("TEXT",   ui_state_e.TEXT)
-                    {curr_ui_state = ui_state_e.TEXT };
+                horizontalArrangement = Arrangement.SpaceEvenly) {
+                for (state in ui_state_e.entries) {
+                    toolbar_button(state) { curr_ui_state = state};
+                }
             }
         }
     }
 }
 
 @Composable
+fun <state_t> panel_button(state: state_t, handle_state: (state_t) -> Unit)
+{
+    Button(onClick = {handle_state(state)}) {
+       Text(state.toString());
+    }
+}
+
+@Composable
 fun panel(state: ui_state_e) {
     Box(modifier = Modifier.fillMaxHeight(0.8F)
-                           .offset(0.dp, -50.dp)
-                           .background(Color.Red),
+                           .offset(0.dp, -50.dp),
         contentAlignment = Alignment.Center) {
         Column(modifier = Modifier.fillMaxHeight(),
-               verticalArrangement = Arrangement.SpaceBetween,
+               verticalArrangement = Arrangement.Bottom,
                horizontalAlignment = Alignment.CenterHorizontally) {
             when (state) {
                 ui_state_e.CURSOR -> {}
                 ui_state_e.DRAW -> {
-                    Button(onClick = {}) {
-                        Text("PENCIL");
-                    }
-                    Button(onClick = {}) {
-                        Text("RUBBER");
-                    }
-                    Button(onClick = {}) {
-                        Text("MARKER");
-                    }
-                    Button(onClick = {}) {
-                        Text("COLOR");
+                    for (draw_state in draw_state_e.entries) {
+                        panel_button(draw_state) {};
                     }
                 }
-
                 ui_state_e.SHAPE -> {
-                    Button(onClick = {}) {
-                        Text("SQUARE");
-                    }
-                    Button(onClick = {}) {
-                        Text("CIRCLE");
-                    }
-                    Button(onClick = {}) {
-                        Text("TRIANGLE");
-                    }
-                    Button(onClick = {}) {
-                        Text("COLOR");
+                    for (shape_state in shape_state_e.entries) {
+                        panel_button(shape_state) {};
                     }
                 }
-
                 ui_state_e.LINE -> {
-                    Button(onClick = {}) {
-                        Text("LINE");
-                    }
-                    Button(onClick = {}) {
-                        Text("JOIN");
-                    }
-                    Button(onClick = {}) {
-                        Text("BEZIER");
-                    }
-                    Button(onClick = {}) {
-                        Text("COLOR");
+                    for (line_state in line_state_e.entries) {
+                        panel_button(line_state) {};
                     }
                 }
-
                 ui_state_e.TEXT -> {
-                    Button(onClick = {}) {
-                        Text("TEXTBOX");
-                    }
-                    Button(onClick = {}) {
-                        Text("HEADER");
-                    }
-                    Button(onClick = {}) {
-                        Text("PARAGRAPH");
-                    }
-                    Button(onClick = {}) {
-                        Text("COLOR");
+                    for (text_state in text_state_e.entries) {
+                        panel_button(text_state) {};
                     }
                 }
+                ui_state_e.COLOR -> {}
             }
         }
     }
@@ -190,36 +176,3 @@ fun panel_pv()
 {
     panel(ui_state_e.DRAW);
 }
-
-/*
-data class Pixel(
-    val x: Float,
-    val y: Float,
-    val col: Color,
-)
-
-@Composable
-fun draw_pixel(pix: Pixel)
-{
-    Canvas(modifier=Modifier.fillMaxWidth()) {
-        drawRect(color=pix.col,
-                 topLeft=Offset(pix.x, pix.y),
-                 size=Size(1F, 1F));
-    }
-}
-
-val cols = listOf(Color.Red, Color.Blue, Color.Green);
-@Preview
-@Composable
-fun draw_pixel_lines()
-{
-    val pix_y = 300F;
-    val pix_x_offset = 300F;
-
-    for (j in 1..50) {
-        for (i in 1..50) {
-            draw_pixel(Pixel(pix_x_offset + i + j, pix_y + j, cols[i % cols.size]));
-        }
-    }
-}
- */
