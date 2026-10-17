@@ -1,5 +1,12 @@
 package com.example.andrawd
 
+/*
+ * Tagged union sort of thing.
+ * ui_kind_e is the top level enum, it describes a toolbar button.
+ * ui_state_e is the active tool within, and .kind refers back to its kind
+ * For example, draw_state_e has states {PENCIL, ERASER, MARKER}, and has kind ui_kind_e.DRAW
+ */
+
 enum class ui_kind_e {
     CURSOR,
     DRAW,
@@ -9,12 +16,6 @@ enum class ui_kind_e {
     COLOR,
 }
 
-/*
- * Tagged union sort of thing.
- * ui_kind_e is the top level enum, it describes a toolbar button.
- * ui_state_e is the active tool within, and .kind refers back to its kind
- * For example, draw_state_e has states {PENCIL, ERASER, MARKER}, and has kind ui_kind_e.DRAW
- */
 sealed interface ui_state_e { val kind : ui_kind_e; }
 
 data object cursor_state : ui_state_e {
@@ -56,7 +57,8 @@ enum class color_state_e : ui_state_e {
     override val kind = ui_kind_e.COLOR;
 }
 
-fun states_of_k(k: ui_kind_e): List<ui_state_e> = when (k) {
+fun states_of_k(k: ui_kind_e): List<ui_state_e> = when (k)
+{
     ui_kind_e.CURSOR -> listOf(cursor_state)
     ui_kind_e.DRAW   -> draw_state_e.entries
     ui_kind_e.SHAPE  -> shape_state_e.entries
