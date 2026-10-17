@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 
 @Composable
-fun toolbar(curr_state: ui_state_e, set_state: (ui_state_e) -> Unit)
+fun toolbar(ad: Andrawd)
 {
     var open_kind  by remember { mutableStateOf<ui_kind_e?>(null) } ;
 
@@ -36,23 +36,17 @@ fun toolbar(curr_state: ui_state_e, set_state: (ui_state_e) -> Unit)
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                 for (k in ui_kind_e.entries) {
                     toolbar_button(k          = k,
-                                   selected   = (curr_state.kind == k),
+                                   selected   = (ad.state.kind == k),
                                    show_panel = (open_kind == k),
-                                   curr_state = curr_state,
+                                   curr_state = ad.state,
                                    on_click   = {
                                        val has_panel = states_of_k(k).size > 1;
-                                       if (curr_state.kind != k) {
-                                           /*
-                                            * can try to save last opened state for each kind,
-                                            * and set this upon opening a new kind..
-                                            * but idk if enums support methods ..:|
-                                            * like a state.last()?
-                                            */
-                                           set_state(states_of_k(k).first());
+                                       if (ad.state.kind != k) {
+                                           ad.select_kind(k);
                                        }
                                        open_kind = if (has_panel && open_kind != k) k else null;
                                    },
-                                   on_panel_click   = {set_state(it); open_kind = null},
+                                   on_panel_click   = {ad.set_state(it); open_kind = null},
                                    on_panel_dismiss = {open_kind = null});
                 }
             }
