@@ -34,17 +34,17 @@ fun toolbar(ad: Andrawd)
             contentAlignment = Alignment.BottomCenter) {
             Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly) {
-                for (g in tool_group_e.entries) {
-                    toolbar_button(g          = g,
-                                   selected   = (ad.tool.group == g),
-                                   show_panel = (open_tool_group == g),
+                for (tg in tool_group_e.entries) {
+                    toolbar_button(tool_group = tg,
+                                   selected   = (ad.tool.group == tg),
+                                   show_panel = (open_tool_group == tg),
                                    curr_tool  = ad.tool,
                                    on_click   = {
-                                       val has_panel = g.tools.size > 1;
-                                       if (ad.tool.group != g) {
-                                           ad.select_tool_group(g);
+                                       val has_panel = tg.tools.size > 1;
+                                       if (ad.tool.group != tg) {
+                                           ad.select_tool_group(tg);
                                        }
-                                       open_tool_group = if (has_panel && open_tool_group != g) g
+                                       open_tool_group = if (has_panel && open_tool_group != tg) tg
                                                          else null;
                                    },
                                    on_panel_click   = {ad.set_tool(it); open_tool_group = null},
@@ -56,7 +56,7 @@ fun toolbar(ad: Andrawd)
 }
 
 @Composable
-private fun toolbar_button(g:                tool_group_e,
+private fun toolbar_button(tool_group:       tool_group_e,
                            curr_tool:        tool_e,
                            selected:         Boolean,
                            show_panel:       Boolean,
@@ -70,13 +70,13 @@ private fun toolbar_button(g:                tool_group_e,
                    colors = if (selected) ButtonDefaults.buttonColors()
                             else ButtonDefaults.filledTonalButtonColors()) {
                 /* TODO: change these to icons or something */
-                Text(g.toString());
+                Text(tool_group.toString());
             }
             if (show_panel) {
                 Popup(alignment = Alignment.Center,
                       offset = IntOffset(0, -150),
                       onDismissRequest = on_panel_dismiss) {
-                    panel(g.tools, curr_tool, on_panel_click);
+                    panel(tool_group.tools, curr_tool, on_panel_click);
                 }
             }
         }
