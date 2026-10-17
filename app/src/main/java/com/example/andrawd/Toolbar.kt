@@ -25,7 +25,7 @@ import androidx.compose.ui.window.Popup
 @Composable
 fun toolbar(ad: Andrawd)
 {
-    var open_kind  by remember { mutableStateOf<ui_kind_e?>(null) } ;
+    var open_tool_group by remember { mutableStateOf<tool_group_e?>(null) } ;
 
     Box(modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter) {
@@ -34,20 +34,21 @@ fun toolbar(ad: Andrawd)
             contentAlignment = Alignment.BottomCenter) {
             Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly) {
-                for (k in ui_kind_e.entries) {
-                    toolbar_button(k          = k,
-                                   selected   = (ad.state.kind == k),
-                                   show_panel = (open_kind == k),
-                                   curr_state = ad.state,
+                for (g in tool_group_e.entries) {
+                    toolbar_button(g          = g,
+                                   selected   = (ad.tool.group == g),
+                                   show_panel = (open_tool_group == g),
+                                   curr_tool  = ad.tool,
                                    on_click   = {
-                                       val has_panel = states_of_k(k).size > 1;
-                                       if (ad.state.kind != k) {
-                                           ad.select_kind(k);
+                                       val has_panel = g.tools.size > 1;
+                                       if (ad.tool.group != g) {
+                                           ad.select_tool_group(g);
                                        }
-                                       open_kind = if (has_panel && open_kind != k) k else null;
+                                       open_tool_group = if (has_panel && open_tool_group != g) g
+                                                         else null;
                                    },
-                                   on_panel_click   = {ad.set_state(it); open_kind = null},
-                                   on_panel_dismiss = {open_kind = null});
+                                   on_panel_click   = {ad.set_tool(it); open_tool_group = null},
+                                   on_panel_dismiss = {open_tool_group = null});
                 }
             }
         }
@@ -55,12 +56,12 @@ fun toolbar(ad: Andrawd)
 }
 
 @Composable
-private fun toolbar_button(k:                ui_kind_e,
-                           curr_state:       ui_state_e,
+private fun toolbar_button(g:                tool_group_e,
+                           curr_tool:        tool_e,
                            selected:         Boolean,
                            show_panel:       Boolean,
                            on_click:         () -> Unit,
-                           on_panel_click:   (ui_state_e) -> Unit,
+                           on_panel_click:   (tool_e) -> Unit,
                            on_panel_dismiss: () -> Unit)
 {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -69,13 +70,13 @@ private fun toolbar_button(k:                ui_kind_e,
                    colors = if (selected) ButtonDefaults.buttonColors()
                             else ButtonDefaults.filledTonalButtonColors()) {
                 /* TODO: change these to icons or something */
-                Text(k.toString());
+                Text(g.toString());
             }
             if (show_panel) {
                 Popup(alignment = Alignment.Center,
                       offset = IntOffset(0, -150),
                       onDismissRequest = on_panel_dismiss) {
-                    panel(states_of_k(k), curr_state, on_panel_click);
+                    panel(g.tools, curr_tool, on_panel_click);
                 }
             }
         }
@@ -83,9 +84,9 @@ private fun toolbar_button(k:                ui_kind_e,
 }
 
 @Composable
-private fun panel(states:     List<ui_state_e>,
-                  curr_state: ui_state_e,
-                  on_click:   (ui_state_e) -> Unit)
+private fun panel(tools:     List<tool_e>,
+                  curr_tool: tool_e,
+                  on_click:  (tool_e) -> Unit)
 {
     Box(modifier = Modifier.fillMaxHeight(0.8F)
                            .offset(0.dp, -50.dp),
@@ -93,9 +94,9 @@ private fun panel(states:     List<ui_state_e>,
         Column(modifier = Modifier.fillMaxHeight(),
                verticalArrangement = Arrangement.Bottom,
                horizontalAlignment = Alignment.CenterHorizontally) {
-            for (state in states) {
-                panel_button(state,
-                             state == curr_state,
+            for (tool in tools) {
+                panel_button(tool,
+                             tool == curr_tool,
                              on_click);
             }
         }
@@ -103,14 +104,14 @@ private fun panel(states:     List<ui_state_e>,
 }
 
 @Composable
-private fun panel_button(state: ui_state_e,
+private fun panel_button(tool:     tool_e,
                          selected: Boolean,
-                         on_click: (ui_state_e) -> Unit)
+                         on_click: (tool_e) -> Unit)
 {
-    Button(onClick = { on_click(state) },
+    Button(onClick = { on_click(tool) },
            colors  = if (selected) ButtonDefaults.buttonColors()
                      else ButtonDefaults.filledTonalButtonColors()) {
         /* TODO: change tthese to icons also */
-        Text(state.toString());
+        Text(tool.toString());
     }
 }

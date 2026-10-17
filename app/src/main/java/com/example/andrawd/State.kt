@@ -2,67 +2,76 @@ package com.example.andrawd
 
 /*
  * Tagged union sort of thing.
- * ui_kind_e is the top level enum, it describes a toolbar button.
- * ui_state_e is the active tool within, and .kind refers back to its kind
- * For example, draw_state_e has states {PENCIL, ERASER, MARKER}, and has kind ui_kind_e.DRAW
+ * tool_group_e is the top level enum, it describes a toolbar button.
+ * tool_e is the active tool within, and .tool_group refers back to its tool_group
+ * tool -> tool group
+ *      draw_tool_e.PENCIL.group  = tool_group_e.DRAW
+ *      shape_tool_e.SQUARE.group = tool_group_e.SHAPE
+ *      ...
+ *
+ * tool group -> tool
+ *      tools_of_group(tool_group_e.DRAW) = {PENCIL, ERASER, MARKER}
+ *      ...
  */
 
-enum class ui_kind_e {
+enum class tool_group_e {
     CURSOR,
     DRAW,
     SHAPE,
     LINE,
     TEXT,
-    COLOR,
+    COLOR;
+
+    val tools: List<tool_e> get() = tools_of_group(this);
 }
 
-sealed interface ui_state_e { val kind : ui_kind_e; }
+sealed interface tool_e { val group : tool_group_e; }
 
-data object cursor_state : ui_state_e {
-    override val kind = ui_kind_e.CURSOR;
+data object cursor_tool : tool_e {
+    override val group = tool_group_e.CURSOR;
 }
 
-enum class draw_state_e : ui_state_e {
+enum class draw_tool_e : tool_e {
     PENCIL,
     ERASER,
     MARKER;
-    override val kind = ui_kind_e.DRAW;
+    override val group = tool_group_e.DRAW;
 }
 
-enum class shape_state_e : ui_state_e {
+enum class shape_tool_e : tool_e {
     SQUARE,
     CIRCLE,
     TRIANGLE;
-    override val kind = ui_kind_e.SHAPE;
+    override val group = tool_group_e.SHAPE;
 }
 
-enum class line_state_e : ui_state_e {
+enum class line_tool_e : tool_e {
     LINE,
     JOIN,
     BEZIER;
-    override val kind = ui_kind_e.LINE;
+    override val group = tool_group_e.LINE;
 }
 
-enum class text_state_e : ui_state_e{
+enum class text_tool_e : tool_e{
     TEXTBOX,
     HEADER,
     PARAGRAPH;
-    override val kind = ui_kind_e.TEXT;
+    override val group = tool_group_e.TEXT;
 }
 
-enum class color_state_e : ui_state_e {
+enum class color_tool_e : tool_e {
     COLOR_1,
     COLOR_2,
     COLOR_3;
-    override val kind = ui_kind_e.COLOR;
+    override val group = tool_group_e.COLOR;
 }
 
-fun states_of_k(k: ui_kind_e): List<ui_state_e> = when (k)
+private fun tools_of_group(group: tool_group_e): List<tool_e> = when (group)
 {
-    ui_kind_e.CURSOR -> listOf(cursor_state)
-    ui_kind_e.DRAW   -> draw_state_e.entries
-    ui_kind_e.SHAPE  -> shape_state_e.entries
-    ui_kind_e.LINE   -> line_state_e.entries
-    ui_kind_e.TEXT   -> text_state_e.entries
-    ui_kind_e.COLOR  -> color_state_e.entries
+    tool_group_e.CURSOR -> listOf(cursor_tool)
+    tool_group_e.DRAW   -> draw_tool_e.entries
+    tool_group_e.SHAPE  -> shape_tool_e.entries
+    tool_group_e.LINE   -> line_tool_e.entries
+    tool_group_e.TEXT   -> text_tool_e.entries
+    tool_group_e.COLOR  -> color_tool_e.entries
 }

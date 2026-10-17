@@ -33,24 +33,24 @@ class MainActivity : ComponentActivity()
 
 class Andrawd()
 {
-    var state by mutableStateOf<ui_state_e>(cursor_state)
+    var tool by mutableStateOf<tool_e>(cursor_tool)
         private set;
 
-    private val last_state = mutableStateMapOf<ui_kind_e, ui_state_e>();
+    private val last_tool = mutableStateMapOf<tool_group_e, tool_e>();
 
-    fun set_state(new_state: ui_state_e)
+    fun set_tool(new_tool: tool_e)
     {
-        state = new_state;
-        last_state[new_state.kind] = state;
+        tool = new_tool;
+        last_tool[new_tool.group] = tool;
     }
 
     /*
-     * searches the last_state map for last state for the kind, if found set it,
-     * otherwise set the first item in the kinds' states as the current state;
+     * searches the last_tool map for last tool for the tool_group, if found set it,
+     * otherwise set the first item in the tool_groups' tools as the current tool;
      */
-    fun select_kind(kind: ui_kind_e)
+    fun select_tool_group(tool_group: tool_group_e)
     {
-        set_state(last_state[kind] ?: states_of_k(kind).first());
+        set_tool(last_tool[tool_group] ?: tool_group.tools.first());
     }
 }
 
