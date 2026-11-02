@@ -6,7 +6,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-              /*compose*/
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.fillMaxSize
+/*compose*/
                      /* runtime */
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -14,6 +16,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 
 import com.example.andrawd.ui.theme.andrawd_theme
 
@@ -35,8 +39,8 @@ class Andrawd()
 {
     var tool by mutableStateOf<tool_e>(cursor_tool)
         private set;
-
     private val last_tool = mutableStateMapOf<tool_group_e, tool_e>();
+    private val canvas = canvas_t();
 
     fun set_tool(new_tool: tool_e)
     {
@@ -52,11 +56,21 @@ class Andrawd()
     {
         set_tool(last_tool[tool_group] ?: tool_group.tools.first());
     }
+
+    @Composable
+    fun fill_screen(c: Color)
+    {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            drawRect(color = c,
+                     size = size);
+        }
+    }
 }
 
 @Composable
 fun andrawd()
 {
     val app = remember { Andrawd() };
+    app.fill_screen(Color.Red);
     toolbar(app);
 }

@@ -22,10 +22,11 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 
+
 @Composable
 fun toolbar(ad: Andrawd)
 {
-    var open_tool_group by remember { mutableStateOf<tool_group_e?>(null) } ;
+    var open_tool_group by remember { mutableStateOf<tool_group_e?>(null); }
 
     Box(modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter) {
@@ -69,8 +70,7 @@ private fun toolbar_button(tool_group:       tool_group_e,
             Button(onClick = on_click,
                    colors = if (selected) ButtonDefaults.buttonColors()
                             else ButtonDefaults.filledTonalButtonColors()) {
-                /* TODO: change these to icons or something */
-                Text(tool_group.toString());
+                Text(tool_group.label);
             }
             if (show_panel) {
                 Popup(alignment = Alignment.Center,
