@@ -26,7 +26,7 @@ import androidx.compose.ui.window.Popup
 @Composable
 fun toolbar(ad: Andrawd)
 {
-    var open_tool_group by remember { mutableStateOf<tool_group_e?>(null); }
+    var open_tool_group by remember { mutableStateOf<ToolGroup?>(null); }
 
     Box(modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter) {
@@ -35,7 +35,7 @@ fun toolbar(ad: Andrawd)
             contentAlignment = Alignment.BottomCenter) {
             Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly) {
-                for (tg in tool_group_e.entries) {
+                for (tg in ToolGroup.entries) {
                     toolbar_button(tool_group = tg,
                                    selected   = (ad.tool.group == tg),
                                    show_panel = (open_tool_group == tg),
@@ -57,12 +57,12 @@ fun toolbar(ad: Andrawd)
 }
 
 @Composable
-private fun toolbar_button(tool_group:       tool_group_e,
-                           curr_tool:        tool_e,
+private fun toolbar_button(tool_group:       ToolGroup,
+                           curr_tool:        Tool,
                            selected:         Boolean,
                            show_panel:       Boolean,
                            on_click:         () -> Unit,
-                           on_panel_click:   (tool_e) -> Unit,
+                           on_panel_click:   (Tool) -> Unit,
                            on_panel_dismiss: () -> Unit)
 {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -84,9 +84,9 @@ private fun toolbar_button(tool_group:       tool_group_e,
 }
 
 @Composable
-private fun panel(tools:     List<tool_e>,
-                  curr_tool: tool_e,
-                  on_click:  (tool_e) -> Unit)
+private fun panel(tools:     List<Tool>,
+                  curr_tool: Tool,
+                  on_click:  (Tool) -> Unit)
 {
     Box(modifier = Modifier.fillMaxHeight(0.8F)
                            .offset(0.dp, -50.dp),
@@ -104,9 +104,9 @@ private fun panel(tools:     List<tool_e>,
 }
 
 @Composable
-private fun panel_button(tool:     tool_e,
+private fun panel_button(tool:     Tool,
                          selected: Boolean,
-                         on_click: (tool_e) -> Unit)
+                         on_click: (Tool) -> Unit)
 {
     Button(onClick = { on_click(tool) },
            colors  = if (selected) ButtonDefaults.buttonColors()

@@ -2,19 +2,19 @@ package com.example.andrawd
 
 /*
  * Tagged union sort of thing.
- * tool_group_e is the top level enum, it describes a toolbar button.
- * tool_e is the active tool within, and .tool_group refers back to its tool_group
+ * ToolGroup is the top level enum, it describes a toolbar button.
+ * Tool is the active tool within, and .tool_group refers back to its tool_group
  * tool -> tool group
- *      draw_tool_e.PENCIL.group  = tool_group_e.DRAW
- *      shape_tool_e.SQUARE.group = tool_group_e.SHAPE
+ *      drawTool.PENCIL.group  = ToolGroup.DRAW
+ *      shapeTool.SQUARE.group = ToolGroup.SHAPE
  *      ...
  *
  * tool group -> tool
- *      tool_group_e.DRAW.tools = (tool_e){PENCIL, ERASER, MARKER}
+ *      ToolGroup.DRAW.tools = (Tool){PENCIL, ERASER, MARKER}
  *      ...
  */
 
-enum class tool_group_e {
+enum class ToolGroup {
     CURSOR,
     DRAW,
     SHAPE,
@@ -22,17 +22,17 @@ enum class tool_group_e {
     TEXT,
     COLOR;
 
-    val tools: List<tool_e> get() = this.get_tools();
+    val tools: List<Tool> get() = this.get_tools();
     val label: String get() = this.get_label();
 
-    private fun get_tools(): List<tool_e> = when (this)
+    private fun get_tools(): List<Tool> = when (this)
     {
-        CURSOR -> listOf(cursor_tool)
-        DRAW   -> draw_tool_e.entries
-        SHAPE  -> shape_tool_e.entries
-        LINE   -> line_tool_e.entries
-        TEXT   -> text_tool_e.entries
-        COLOR  -> color_tool_e.entries
+        CURSOR -> listOf(CursorTool)
+        DRAW   -> DrawTool.entries
+        SHAPE  -> ShapeTool.entries
+        LINE   -> LineTool.entries
+        TEXT   -> TextTool.entries
+        COLOR  -> ColorTool.entries
     }
 
     private fun get_label(): String = when (this)
@@ -46,50 +46,50 @@ enum class tool_group_e {
    }
 }
 
-sealed interface tool_e {
-    val group : tool_group_e;
+sealed interface Tool {
+    val group : ToolGroup;
 }
 
-data object cursor_tool : tool_e {
-    override val group = tool_group_e.CURSOR;
+data object CursorTool : Tool {
+    override val group = ToolGroup.CURSOR;
 }
 
-enum class draw_tool_e : tool_e {
+enum class DrawTool : Tool {
     PENCIL,
     ERASER,
     MARKER;
 
-    override val group = tool_group_e.DRAW;
+    override val group = ToolGroup.DRAW;
 }
 
-enum class shape_tool_e : tool_e {
+enum class ShapeTool : Tool {
     SQUARE,
     CIRCLE,
     TRIANGLE;
 
-    override val group = tool_group_e.SHAPE;
+    override val group = ToolGroup.SHAPE;
 }
 
-enum class line_tool_e : tool_e {
+enum class LineTool : Tool {
     LINE,
     JOIN,
     BEZIER;
 
-    override val group = tool_group_e.LINE;
+    override val group = ToolGroup.LINE;
 }
 
-enum class text_tool_e : tool_e{
+enum class TextTool : Tool{
     TEXTBOX,
     HEADER,
     PARAGRAPH;
 
-    override val group = tool_group_e.TEXT;
+    override val group = ToolGroup.TEXT;
 }
 
-enum class color_tool_e : tool_e {
+enum class ColorTool : Tool {
     COLOR_1,
     COLOR_2,
     COLOR_3;
 
-    override val group = tool_group_e.COLOR;
+    override val group = ToolGroup.COLOR;
 }

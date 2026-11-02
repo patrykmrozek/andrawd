@@ -37,12 +37,12 @@ class MainActivity : ComponentActivity()
 
 class Andrawd()
 {
-    var tool by mutableStateOf<tool_e>(cursor_tool)
+    var tool by mutableStateOf<Tool>(CursorTool)
         private set;
-    private val last_tool = mutableStateMapOf<tool_group_e, tool_e>();
-    private val canvas = canvas_t();
+    private val last_tool = mutableStateMapOf<ToolGroup, Tool>();
+    private val canvas = Drawing();
 
-    fun set_tool(new_tool: tool_e)
+    fun set_tool(new_tool: Tool)
     {
         tool = new_tool;
         last_tool[new_tool.group] = tool;
@@ -52,7 +52,7 @@ class Andrawd()
      * searches the last_tool map for last tool for the tool_group, if found set it,
      * otherwise set the first item in the tool_groups' tools as the current tool;
      */
-    fun select_tool_group(tool_group: tool_group_e)
+    fun select_tool_group(tool_group: ToolGroup)
     {
         set_tool(last_tool[tool_group] ?: tool_group.tools.first());
     }

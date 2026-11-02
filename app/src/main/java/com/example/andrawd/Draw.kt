@@ -3,8 +3,8 @@ package com.example.andrawd
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.geometry.Offset
 
-class stroke_t(val color: Color,
-               val width: Float)
+class Stroke(val color: Color,
+             val width: Float)
 {
     private val _points = mutableListOf<Offset>();
     val points: List<Offset> get() = _points;
@@ -15,12 +15,12 @@ class stroke_t(val color: Color,
     }
 }
 
-class canvas_t()
+class Drawing()
 {
-    private val _strokes = mutableListOf<stroke_t>();
-    val strokes: List<stroke_t> get() = _strokes;
+    private val _strokes = mutableListOf<Stroke>();
+    val strokes: List<Stroke> get() = _strokes;
 
-    fun add_stroke(s: stroke_t)
+    fun add_stroke(s: Stroke)
     {
         _strokes.add(s);
     }
