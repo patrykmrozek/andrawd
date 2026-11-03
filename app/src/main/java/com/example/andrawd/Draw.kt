@@ -31,8 +31,7 @@ class Stroke(val color: Color,
     }
 }
 
-class Drawing()
-{
+class Drawing() {
     private val _strokes =  mutableStateListOf<Stroke>();
     val strokes: List<Stroke> get() = _strokes;
 
@@ -48,14 +47,18 @@ class Drawing()
                                   .pointerInput(Unit)
                                   {
                                       awaitPointerEventScope {
-                                          val stroke = Stroke(curr_color, 1f);
+                                          var stroke = Stroke(curr_color, 1f);
                                           while(true) {
                                               val event = awaitPointerEvent();
                                               val p = event.changes.first().position;
                                               Log.d("position", "$p");
                                               when (event.type) {
-                                                  PointerEventType.Press   -> stroke.add_point(p);
-                                                  PointerEventType.Move    -> stroke.add_point(p);
+                                                  PointerEventType.Press   -> {
+                                                      stroke = Stroke(curr_color, 1f);
+                                                      stroke.add_point(p);
+                                                      add_stroke(stroke);
+                                                  };
+                                                  PointerEventType.Move    -> stroke.add_point(p)
                                                   PointerEventType.Release -> add_stroke(stroke);
                                               }
                                           }
@@ -83,12 +86,14 @@ class Renderer(drawing: Drawing)
     {
         val strokes =  _drawing.strokes;
         Log.d("strokes", "$strokes");
+        Log.d("strokes size", "${strokes.size}");
         for (s in strokes) {
             Canvas(modifier = Modifier.fillMaxSize()) {
                 val pmode: PointMode = if (s.points.size > 1) PointMode.Polygon else PointMode.Points;
                 Log.d("stroke points: ", "${s.points}");
                 Log.d("stroke color: ", "${s.color}");
                 Log.d("stroke width: ", "${s.width}");
+                Log.d("stroke_size: ", "${s.points.size}");
                 drawPoints(s.points, pmode, s.color, s.width);
             }
         }
