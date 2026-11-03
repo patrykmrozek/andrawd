@@ -6,9 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.fillMaxSize
-/*compose*/
+              /*compose*/
                      /* runtime */
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -16,7 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
 import com.example.andrawd.ui.theme.andrawd_theme
@@ -39,7 +36,7 @@ class Andrawd()
 {
     var tool by mutableStateOf<Tool>(CursorTool)
         private set;
-    val curr_color: Color = Color.Black;
+    val curr_color: Color = Color.Black; /* expand this into some color selector */
 
     private val last_tool = mutableStateMapOf<ToolGroup, Tool>();
     private val drawing = Drawing();
@@ -64,7 +61,9 @@ class Andrawd()
     fun render(c: Color)
     {
         renderer.fill_screen(c);
-        drawing.record_strokes(curr_color);
+        if (tool.group == ToolGroup.DRAW) {
+            drawing.record_strokes(curr_color);
+        }
         renderer.draw_strokes();
     }
 }

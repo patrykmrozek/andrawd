@@ -21,8 +21,7 @@ enum class ToolGroup {
     DRAW,
     SHAPE,
     LINE,
-    TEXT,
-    COLOR;
+    TEXT;
 
     val tools: List<Tool> get() = this.get_tools();
     val label: String get() = this.get_label();
@@ -34,7 +33,6 @@ enum class ToolGroup {
         SHAPE  -> ShapeTool.entries
         LINE   -> LineTool.entries
         TEXT   -> TextTool.entries
-        COLOR  -> ColorTool.entries
     }
 
     private fun get_label(): String = when (this)
@@ -44,7 +42,6 @@ enum class ToolGroup {
         SHAPE  -> "S"
         LINE   -> "L"
         TEXT   -> "T"
-        COLOR  -> "C"
    }
 }
 
@@ -86,20 +83,4 @@ enum class TextTool : Tool{
     PARAGRAPH;
 
     override val group = ToolGroup.TEXT;
-}
-
-enum class ColorTool : Tool {
-    COLOR_RED,
-    COLOR_GREEN,
-    COLOR_BLUE;
-
-    override val group = ToolGroup.COLOR;
-    val color: Color get() = this.get_color();
-
-    private fun get_color(): Color = when (this)
-    {
-        COLOR_RED   -> Color.Red
-        COLOR_GREEN -> Color.Green
-        COLOR_BLUE  -> Color.Blue
-    }
 }
