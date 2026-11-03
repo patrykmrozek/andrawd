@@ -1,5 +1,7 @@
 package com.example.andrawd
 
+import androidx.compose.ui.graphics.Color
+
 /*
  * Tagged union sort of thing.
  * ToolGroup is the top level enum, it describes a toolbar button.
@@ -87,9 +89,17 @@ enum class TextTool : Tool{
 }
 
 enum class ColorTool : Tool {
-    COLOR_1,
-    COLOR_2,
-    COLOR_3;
+    COLOR_RED,
+    COLOR_GREEN,
+    COLOR_BLUE;
 
     override val group = ToolGroup.COLOR;
+    val color: Color get() = this.get_color();
+
+    private fun get_color(): Color = when (this)
+    {
+        COLOR_RED   -> Color.Red
+        COLOR_GREEN -> Color.Green
+        COLOR_BLUE  -> Color.Blue
+    }
 }

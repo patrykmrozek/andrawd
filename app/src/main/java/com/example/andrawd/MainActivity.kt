@@ -39,6 +39,8 @@ class Andrawd()
 {
     var tool by mutableStateOf<Tool>(CursorTool)
         private set;
+    val curr_color: Color = Color.Black;
+
     private val last_tool = mutableStateMapOf<ToolGroup, Tool>();
     private val drawing = Drawing();
     private val renderer = Renderer(drawing);
@@ -50,7 +52,7 @@ class Andrawd()
     }
 
     /*
-     * searches the last_tool map for last tool for the tool_group, if found set it,
+     * searches the last_tool map for last tool in the tool_group, if found set it,
      * otherwise set the first item in the tool_groups' tools as the current tool;
      */
     fun select_tool_group(tool_group: ToolGroup)
@@ -62,7 +64,7 @@ class Andrawd()
     fun render(c: Color)
     {
         renderer.fill_screen(c);
-        drawing.record_strokes();
+        drawing.record_strokes(curr_color);
         renderer.draw_strokes();
     }
 }
@@ -71,6 +73,6 @@ class Andrawd()
 fun andrawd()
 {
     val app = remember { Andrawd() };
-    app.render(Color.Red);
+    app.render(Color.White);
     toolbar(app);
 }
