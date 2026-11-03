@@ -40,7 +40,8 @@ class Andrawd()
     var tool by mutableStateOf<Tool>(CursorTool)
         private set;
     private val last_tool = mutableStateMapOf<ToolGroup, Tool>();
-    private val canvas = Drawing();
+    private val drawing = Drawing();
+    private val renderer = Renderer(drawing);
 
     fun set_tool(new_tool: Tool)
     {
@@ -58,12 +59,11 @@ class Andrawd()
     }
 
     @Composable
-    fun fill_screen(c: Color)
+    fun render(c: Color)
     {
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            drawRect(color = c,
-                     size = size);
-        }
+        renderer.fill_screen(c);
+        drawing.record_strokes();
+        renderer.draw_strokes();
     }
 }
 
@@ -71,6 +71,6 @@ class Andrawd()
 fun andrawd()
 {
     val app = remember { Andrawd() };
-    app.fill_screen(Color.Red);
+    app.render(Color.Red);
     toolbar(app);
 }
