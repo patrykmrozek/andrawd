@@ -2,6 +2,7 @@ package com.example.andrawd
 
      /* andoid */
 import android.os.Bundle
+import android.util.Log
              /* activity */
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.ui.graphics.Color
 
@@ -34,9 +36,15 @@ class MainActivity : ComponentActivity()
 
 class Andrawd()
 {
-    var tool by mutableStateOf<Tool>(CursorTool)
-        private set;
-    val curr_color: Color = Color.Black; /* expand this into some color selector */
+
+    val DEFAULT_COLOR: Color = Color.Black;
+    val DEFAULT_BG_COLOR: Color = Color.White;
+    val DEFAULT_WIDTH: Float = 10f;
+
+    var tool by mutableStateOf<Tool>(CursorTool); private set;
+    var curr_color = mutableStateOf<Color>(DEFAULT_COLOR); /* expand this into some color selector */
+    var curr_bg_color = mutableStateOf<Color>(DEFAULT_BG_COLOR);
+    var curr_width = mutableFloatStateOf(DEFAULT_WIDTH); /* make this some draggable bar thing */
 
     private val last_tool = mutableStateMapOf<ToolGroup, Tool>();
     private val drawing = Drawing();
@@ -58,11 +66,18 @@ class Andrawd()
     }
 
     @Composable
-    fun render(c: Color)
+    fun render()
     {
-        renderer.fill_screen(c);
+        renderer.fill_screen(curr_bg_color.value);
         if (tool.group == ToolGroup.DRAW) {
-            drawing.record_strokes(curr_color);
+            Log.d("tool:", "${tool.toString()}");
+            if (tool == DrawTool.ERASER) {
+                drawing.record_strokes(Color.White, curr_width.value);
+            } else if (tool == DrawTool.PENCIL) {
+                drawing.record_strokes(Color.Gray, curr_width.value * 0.3f);
+            } else if (tool == DrawTool.MARKER) {
+                drawing.record_strokes(curr_color.value, curr_width.value);
+            }
         }
         renderer.draw_strokes();
     }
@@ -72,6 +87,6 @@ class Andrawd()
 fun andrawd()
 {
     val app = remember { Andrawd() };
-    app.render(Color.White);
+    app.render();
     toolbar(app);
 }

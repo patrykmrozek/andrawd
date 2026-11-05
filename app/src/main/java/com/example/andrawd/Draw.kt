@@ -34,12 +34,10 @@ class Drawing() {
     }
 
     @Composable
-    fun record_strokes(curr_color: Color)
+    fun record_strokes(curr_color: Color, width: Float)
     {
-        val width = 5f; /* need to store this in Andrawd w color */
         Canvas(modifier = Modifier.fillMaxSize()
-                                  .pointerInput(Unit)
-                                  {
+                                  .pointerInput(Unit) {
                                       awaitPointerEventScope {
                                           var stroke = Stroke(curr_color, width);
                                           while(true) {
